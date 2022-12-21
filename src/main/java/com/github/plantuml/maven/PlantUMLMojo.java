@@ -46,6 +46,16 @@ public final class PlantUMLMojo extends AbstractMojo {
     protected final Option option = new Option();
 
     /**
+     * Whether to skip images generation altogether.
+     * This is useful for configuring PlantUML in a parent POM while letting sub-modules to 
+     * disable generation if they do not feature any diagrams.
+     * <p>
+     * If this is set to true then generation is skipped.
+     */
+    @Parameter(property = "skip", defaultValue = "false")
+    protected boolean skipGeneration;
+    
+    /**
      * Truncate the ouput folder.
      *
      * @since 1.2
@@ -153,6 +163,11 @@ public final class PlantUMLMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+        if(this.skipGeneration){
+            getLog().warn("Skipping plantuml generation due to configuration");
+            return;
+        }
+        
         // early exit if sourceFiles directory is not available
         final String invalidSourceFilesDirectoryWarnMsg = this.sourceFiles.getDirectory() + " is not a valid path";
         if (null == this.sourceFiles.getDirectory() || this.sourceFiles.getDirectory().isEmpty()) {
